@@ -1,8 +1,8 @@
 package ru.irlix.gusev.testovoe
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import ru.irlix.gusev.testovoe.ui.main.MainFragment
+import androidx.appcompat.app.AppCompatActivity
+import ru.irlix.gusev.testovoe.screen.ui.fragment.MainFragment
 
 class MainActivity : AppCompatActivity() {
 

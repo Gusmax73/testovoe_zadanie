@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Testovoe</string>
+    <string name="count_redraw_vertical">Количество вызывов bind в вертикали:</string>
+    <string name="count_redraw_horizontal">Количество вызывов bind в горизонтали:</string>
 </resources>
