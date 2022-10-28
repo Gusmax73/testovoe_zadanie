@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import ru.irlix.gusev.testovoe.R
 import ru.irlix.gusev.testovoe.databinding.FragmentMainBinding
 import ru.irlix.gusev.testovoe.screen.domain.util.CounterBindUtil
@@ -44,11 +46,26 @@ class MainFragment : Fragment() {
             adapter = this@MainFragment.adapter
         }
 
+        setScrollListener()
+
         viewModel.init()
 
         viewModel.diffResultItems.observe(viewLifecycleOwner) { (items, diffResult) ->
             updateItems(items, diffResult)
         }
+    }
+
+    private fun setScrollListener() {
+        val layoutManager = binding.rvVertical.layoutManager ?: return
+        val linearLayoutManager = layoutManager as LinearLayoutManager
+
+        binding.rvVertical.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                viewModel.firstVisiblePosition = linearLayoutManager.findFirstVisibleItemPosition()
+                viewModel.lastVisiblePosition = linearLayoutManager.findLastVisibleItemPosition()
+            }
+        })
     }
 
     override fun onStart() {

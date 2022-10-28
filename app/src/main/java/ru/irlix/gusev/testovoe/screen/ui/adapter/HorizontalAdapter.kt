@@ -1,10 +1,13 @@
 package ru.irlix.gusev.testovoe.screen.ui.adapter
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import ru.irlix.gusev.testovoe.R
 import ru.irlix.gusev.testovoe.databinding.ItemHorizontalBinding
 import ru.irlix.gusev.testovoe.screen.domain.util.CounterBindUtil
 import ru.irlix.gusev.testovoe.screen.ui.model.HorizontalModel
@@ -40,10 +43,15 @@ class HorizontalAdapter : RecyclerView.Adapter<HorizontalAdapter.HorizontalViewH
         notifyDataSetChanged()
     }
 
-    fun updateItem(position: Int, newNumber: Int) {
+    // isRedraw - нужен, чтобы после пролистывания вертикального списка,
+    // в горизонтальном списке не начали обновляться по несколько чисел за один раз
+    // (т.е. если убрать проверку, то проскроллив вниз, будут обновляться несколько айтемов в 1 секунду)
+    fun updateItem(position: Int, newNumber: Int, isRedraw: Boolean) {
         horizontalItems[position].number = newNumber
-        Handler(Looper.getMainLooper()).post {
-            notifyItemChanged(position)
+        if (isRedraw) {
+            Handler(Looper.getMainLooper()).post {
+                notifyItemChanged(position)
+            }
         }
     }
 
@@ -55,13 +63,17 @@ class HorizontalAdapter : RecyclerView.Adapter<HorizontalAdapter.HorizontalViewH
             CounterBindUtil.addHorizontal()
             viewBinding.tvNumber.text = model.number.toString()
 
-//            val colorFrom: Int = itemView.context.getColor(R.color.red)
-//            val colorTo: Int = itemView.context.getColor(R.color.white)
-//            val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-//            colorAnimation.duration = 700 // milliseconds
-//
-//            colorAnimation.addUpdateListener { animator -> viewBinding.tvNumber.setBackgroundColor(animator.animatedValue as Int) }
-//            colorAnimation.start()
+            showRedraw(viewBinding)
+        }
+
+        private fun showRedraw(viewBinding: ItemHorizontalBinding) {
+            val colorFrom: Int = viewBinding.root.context.getColor(R.color.red)
+            val colorTo: Int = viewBinding.root.context.getColor(R.color.white)
+            val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+            colorAnimation.duration = 700 // milliseconds
+
+            colorAnimation.addUpdateListener { animator -> viewBinding.tvNumber.setBackgroundColor(animator.animatedValue as Int) }
+            colorAnimation.start()
         }
     }
 }

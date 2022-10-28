@@ -28,6 +28,9 @@ class MainViewModel : ViewModel() {
     private val _diffResultItems = MutableLiveData<Pair<List<VerticalModel>, DiffUtil.DiffResult>>()
     val diffResultItems: LiveData<Pair<List<VerticalModel>, DiffUtil.DiffResult>> = _diffResultItems
 
+    var firstVisiblePosition = 0
+    var lastVisiblePosition = 0
+
     fun init() {
         startTimer()
     }
@@ -66,7 +69,7 @@ class MainViewModel : ViewModel() {
 
         for (index in 0 until verticalItems.size) {
             val verticalModel = verticalItems[index]
-            changeOneNumberInHorizontal(verticalModel)
+            changeOneNumberInHorizontal(index, verticalModel)
 
             when (index) {
                 currentPosition -> {
@@ -85,7 +88,7 @@ class MainViewModel : ViewModel() {
         return newItems
     }
 
-    private fun changeOneNumberInHorizontal(verticalModel: VerticalModel) {
+    private fun changeOneNumberInHorizontal(indexVertical: Int, verticalModel: VerticalModel) {
         val indexChange = Random.nextInt(0, COUNT_ITEMS_HORIZONTAL - 1)
         var newNumber = Random.nextInt(0, NUMBER_MAX_VALUE)
         val oldNumber = verticalModel.horizontalItems[indexChange].number
@@ -94,7 +97,8 @@ class MainViewModel : ViewModel() {
             newNumber = Random.nextInt(0, NUMBER_MAX_VALUE)
         }
 
-        verticalModel.callbackChangeNumber?.invoke(indexChange, newNumber)
+        val isRedraw = indexVertical in firstVisiblePosition..lastVisiblePosition
+        verticalModel.callbackChangeNumber?.invoke(indexChange, newNumber, isRedraw)
     }
 
     // Исключает выдачу повторных подряд позиций, чтобы гарантированно перемещать строку
